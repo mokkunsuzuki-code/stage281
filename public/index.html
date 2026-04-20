@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Stage281+283 Verification</title>
+</head>
+<body>
+<h1>Verification Page</h1>
+
+<p><b>Summary:</b></p>
+<pre id="summary"></pre>
+
+<p><b>SHA256:</b></p>
+<pre id="sha256"></pre>
+
+<p>Verify locally:</p>
+<pre>
+shasum -a 256 summary.json
+ots verify summary.json.ots
+</pre>
+
+<script>
+fetch('verification/summary.json').then(r=>r.text()).then(t=>{
+  document.getElementById('summary').textContent = t;
+});
+fetch('verification/summary.sha256').then(r=>r.text()).then(t=>{
+  document.getElementById('sha256').textContent = t;
+});
+</script>
+
+</body>
+</html>
