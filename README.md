@@ -1,81 +1,118 @@
-# Stage281-283: Identity Binding and External Signing Proof
+# QSP / VEP / Stage281 + Stage283 + Public Verification URL
 
 ## Overview
-This repository now covers three connected layers:
 
-- **Stage281**: GPG-based identity binding
-- **Stage281.5**: pinned public key and reproducible identity verification
-- **Stage283**: Sigstore keyless signing and external verification
+This repository integrates:
 
-The progression is:
+- Stage281: Identity binding (GPG + GitHub-linked identity)
+- Stage281.5: Identity pinning and reproducibility
+- Stage283: Sigstore keyless external proof
+- Public Verification URL: Reproducible, browser-accessible verification
 
-local identity binding → pinned identity artifacts → externally verifiable signing proof
+It provides a complete, layered trust model:
 
-## Stage281
-Stage281 binds a signing public key to the repository operator identity.
+identity → external proof → public verification
 
-This adds:
-- GPG signing key generation
-- signed commits
-- signed tags
-- GitHub Verified-compatible identity linkage
+---
 
-## Stage281.5
-Stage281.5 strengthens identity verification by pinning the public key in the repository.
+## Public Verification
 
-This adds:
-- `identity/identity.json`
-- `identity/public_key.asc`
-- `tools/verify_identity.sh`
+👉 https://mokkunsuzuki-code.github.io/stage281/
 
-These artifacts allow third parties to reproduce identity verification locally.
+The public page exposes:
 
-## Stage283
-Stage283 adds external signing proof using Sigstore keyless signing.
+- summary.json (verification metadata)
+- summary.sha256 (integrity hash)
+- summary.json.ots (timestamp proof)
+- Reproducible verification commands
 
-This adds:
-- OIDC-based identity authentication
-- short-lived X.509 certificate issuance
-- Sigstore transparency-backed bundle output
-- reproducible verification with `cosign verify-blob`
+---
 
-## What this repository proves
-- A signing key can be bound to the operator identity
-- Signed commits and signed tags can be verified locally
-- A pinned public key can be published and reused for verification
-- External signing proof can be produced without managing a long-lived external private key
-- Sigstore bundle verification can succeed independently of local GPG trust
+## What This Repository Proves
 
-## Verification
+This repository demonstrates that:
 
-### Verify latest GPG-signed commit
+- A signing identity can be cryptographically bound (Stage281)
+- That identity can be pinned and reproducible (Stage281.5)
+- External systems can independently verify signatures (Stage283)
+- All verification can be publicly reproduced via URL
+
+---
+
+## Trust Model
+
+### Identity Trust (Stage281)
+
+- GPG key generation
+- GitHub-linked identity
+- Signed commits
+- Signed tags
+
+### Identity Pinning (Stage281.5)
+
+- identity/identity.json
+- identity/public_key.asc
+- Reproducible verification steps
+
+### External Trust (Stage283)
+
+- Sigstore keyless signing
+- Bundle-based verification
+- Independent of local GPG trust
+
+### Public Verification
+
+- GitHub Pages
+- summary.json / sha256 / OTS
+- Browser-accessible verification
+
+---
+
+## Artifacts
+
+- identity/identity.json
+- identity/public_key.asc
+- external/sigstore/artifact.sigstore.json
+- external/sigstore/artifact.txt
+- public/summary.json
+- public/summary.sha256
+- public/summary.json.ots
+
+---
+
+## Verification Commands
+
+### GPG Commit
+
 ```bash
 git log --show-signature -1
-Verify signed tag
+GPG Tag
 git tag -v stage281-v1
-Verify pinned identity
-./tools/verify_identity.sh
-Verify Sigstore bundle
+Sigstore
 cosign verify-blob external/sigstore/artifact.txt \
   --bundle external/sigstore/artifact.sigstore.json \
   --certificate-identity mokkun.suzuki@gmail.com \
-  --certificate-oidc-issuer https://github.com/login/oauth
-Scope note
+  --certificate-oidc-issuer https://oauth2.sigstore.dev/auth
+Summary Verification
+shasum -a 256 public/summary.json
+ots verify public/summary.json.ots
+Key Concept
 
-This repository currently covers:
+A signature alone proves:
 
-GPG identity binding
-pinned public key verification
-Sigstore keyless signing proof
+"someone with a private key signed this"
 
-It does not yet cover:
+This repository proves:
 
-YubiKey-backed hardware protection
-threshold signing
-multi-party signer policy
-Next possible step
-Stage282: move signing capability to YubiKey-backed hardware
-Stage284: add multi-signer or threshold identity controls
+"this specific identity signed this, and that fact is externally verifiable and publicly reproducible"
+
+Final State
+
+✔ Identity bound
+✔ Identity pinned
+✔ External proof established
+✔ Public verification available
+
 License
 
 MIT License
