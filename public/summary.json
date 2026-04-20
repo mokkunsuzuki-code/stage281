@@ -1,5 +1,6 @@
 {
   "stage": "281+283+263",
+  "decision": "verified",
   "description": "ID binding + Sigstore external proof + public verification URL",
   "artifacts": {
     "gpg_identity": "identity/identity.json",
