@@ -1,32 +1,367 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Stage281+283 Verification</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QSP / VEP / Stage281+283 Verification</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121933;
+      --panel-2: #192347;
+      --text: #eef2ff;
+      --muted: #b8c1e3;
+      --line: rgba(255,255,255,0.12);
+      --ok: #23c16b;
+      --ok-bg: rgba(35,193,107,0.14);
+      --accent: #7aa2ff;
+      --accent-2: #8b5cf6;
+      --warn: #f5c451;
+      --shadow: 0 10px 30px rgba(0,0,0,0.28);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(122,162,255,0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(139,92,246,0.16), transparent 24%),
+        linear-gradient(180deg, #0b1020 0%, #0e1428 100%);
+      color: var(--text);
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(122,162,255,0.16), rgba(139,92,246,0.16));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d7deff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 12px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.1;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 860px;
+      margin: 0;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 22px 0 26px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .status-card {
+      background: linear-gradient(180deg, rgba(35,193,107,0.14), rgba(35,193,107,0.06));
+      border: 1px solid rgba(35,193,107,0.28);
+    }
+
+    .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .value-xl {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .value-lg {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ok-bg);
+      color: #c8ffe0;
+      border: 1px solid rgba(35,193,107,0.28);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 14px;
+    }
+
+    .kv {
+      display: grid;
+      gap: 12px;
+    }
+
+    .kv-item {
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .kv-item b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #dfe5ff;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #09101f;
+      color: #dfe7ff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.65;
+      overflow: auto;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+
+    .footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 960px) {
+      .status-row, .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-<h1>Verification Page</h1>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">QSP / VEP / Public Verification</div>
+      <h1>Stage281 + Stage283 + Public Verification URL</h1>
+      <p class="sub">
+        This page combines identity binding, external signing proof, and public verification.
+        It exposes the pinned GPG identity artifacts, the Sigstore bundle, and the verification summary
+        through a reproducible public page.
+      </p>
 
-<p><b>Summary:</b></p>
-<pre id="summary"></pre>
+      <div class="status-row">
+        <div class="card status-card">
+          <div class="label">Status</div>
+          <div class="value-xl">Verified</div>
+          <div class="pill">Identity + External Proof + Public URL</div>
+        </div>
+        <div class="card">
+          <div class="label">Identity Layer</div>
+          <div class="value-lg">Stage281</div>
+          <div class="muted">GPG signing, GitHub-linked identity, signed commit and signed tag.</div>
+        </div>
+        <div class="card">
+          <div class="label">External Proof</div>
+          <div class="value-lg">Stage283</div>
+          <div class="muted">Sigstore keyless signing with bundle-based verification.</div>
+        </div>
+        <div class="card">
+          <div class="label">Public Access</div>
+          <div class="value-lg">Pages URL</div>
+          <div class="muted">Anyone can inspect the summary, hash, and local verification steps.</div>
+        </div>
+      </div>
 
-<p><b>SHA256:</b></p>
-<pre id="sha256"></pre>
+      <div class="actions">
+        <a class="btn" href="verification/summary.json">Open summary.json</a>
+        <a class="btn secondary" href="verification/summary.sha256">Open summary.sha256</a>
+        <a class="btn secondary" href="verification/summary.json.ots">Download summary.json.ots</a>
+      </div>
+    </section>
 
-<p>Verify locally:</p>
-<pre>
-shasum -a 256 summary.json
+    <div class="grid-3">
+      <section class="card">
+        <h2 class="section-title">Final Decision</h2>
+        <div class="value-lg">Accepted for public verification</div>
+        <div class="muted">
+          The repository exposes a pinned identity layer and an externally verified Sigstore bundle,
+          then publishes a reproducible verification summary at a public URL.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">Identity Trust</h2>
+        <div class="value-lg">GPG + pinned key</div>
+        <div class="muted">
+          The signer identity is fixed through the repository’s exported public key and identity metadata.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">External Trust</h2>
+        <div class="value-lg">Sigstore bundle</div>
+        <div class="muted">
+          Verification succeeds independently of local GPG trust through bundle-based validation.
+        </div>
+      </section>
+    </div>
+
+    <div class="grid-2">
+      <section class="card">
+        <h2 class="section-title">Artifacts</h2>
+        <div class="kv" id="artifacts"></div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">Verification Commands</h2>
+        <div class="kv" id="verification"></div>
+      </section>
+    </div>
+
+    <div class="grid-2">
+      <section class="card">
+        <h2 class="section-title">Summary JSON</h2>
+        <pre id="summary">Loading...</pre>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">SHA256</h2>
+        <pre id="sha256">Loading...</pre>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2 class="section-title">Verify Locally</h2>
+      <pre>shasum -a 256 summary.json
 ots verify summary.json.ots
-</pre>
+git log --show-signature -1
+git tag -v stage281-v1
+cosign verify-blob external/sigstore/artifact.txt --bundle external/sigstore/artifact.sigstore.json --certificate-identity mokkun.suzuki@gmail.com --certificate-oidc-issuer https://github.com/login/oauth</pre>
+    </section>
 
-<script>
-fetch('verification/summary.json').then(r=>r.text()).then(t=>{
-  document.getElementById('summary').textContent = t;
-});
-fetch('verification/summary.sha256').then(r=>r.text()).then(t=>{
-  document.getElementById('sha256').textContent = t;
-});
-</script>
+    <div class="footer">
+      Public verification page for the Stage281 / Stage283 trust chain.
+    </div>
+  </div>
 
+  <script>
+    async function load() {
+      const summaryText = await fetch('verification/summary.json').then(r => r.text());
+      const shaText = await fetch('verification/summary.sha256').then(r => r.text());
+
+      document.getElementById('summary').textContent = summaryText.trim();
+      document.getElementById('sha256').textContent = shaText.trim();
+
+      const summary = JSON.parse(summaryText);
+
+      const artifacts = document.getElementById('artifacts');
+      Object.entries(summary.artifacts || {}).forEach(([key, value]) => {
+        const item = document.createElement('div');
+        item.className = 'kv-item';
+        item.innerHTML = `<b>${key}</b><div class="muted">${value}</div>`;
+        artifacts.appendChild(item);
+      });
+
+      const verification = document.getElementById('verification');
+      Object.entries(summary.verification || {}).forEach(([key, value]) => {
+        const item = document.createElement('div');
+        item.className = 'kv-item';
+        item.innerHTML = `<b>${key}</b><div class="muted">${value}</div>`;
+        verification.appendChild(item);
+      });
+    }
+
+    load().catch(err => {
+      document.getElementById('summary').textContent = 'Failed to load summary.json';
+      document.getElementById('sha256').textContent = String(err);
+    });
+  </script>
 </body>
 </html>
