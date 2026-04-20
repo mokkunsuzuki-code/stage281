@@ -1,6 +1,6 @@
 {
   "stage": "281+283+263",
-  "description": "Identity binding + Sigstore external proof + public verification URL",
+  "description": "ID binding + Sigstore external proof + public verification URL",
   "artifacts": {
     "gpg_identity": "identity/identity.json",
     "public_key": "identity/public_key.asc",
@@ -10,6 +10,6 @@
   "verification": {
     "gpg_commit": "git log --show-signature -1",
     "gpg_tag": "git tag -v stage281-v1",
-    "sigstore": "cosign verify-blob external/sigstore/artifact.txt --bundle external/sigstore/artifact.sigstore.json --certificate-identity mokkun.suzuki@gmail.com --certificate-oidc-issuer https://github.com/login/oauth"
+    "sigstore": "cosign verify-blob external/sigstore/artifact.txt --bundle external/sigstore/artifact.sigstore.json --certificate-identity mokkun.suzuki@gmail.com --certificate-oidc-issuer https://oauth2.sigstore.dev/auth"
   }
 }
